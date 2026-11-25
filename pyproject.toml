@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "domain-llm"
+version = "1.0.0"
+description = "QLoRA fine-tuning of a small LLM on biomedical QA (PubMedQA), benchmarked against the base model and an API model."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Abdul Ahad" }]
+dependencies = [
+    "pydantic>=2.6",
+    "pyyaml>=6.0",
+    "typer>=0.12",
+    "rich>=13",
+]
+
+[project.optional-dependencies]
+# Model training / local inference
+train = [
+    "torch>=2.3",
+    "transformers>=4.56",
+    "peft>=0.13",
+    "accelerate>=1.0",
+    "datasets>=3.0",
+    "bitsandbytes>=0.45; platform_system != 'Darwin'",
+]
+# API baseline
+api = ["anthropic>=0.75"]
+# HTTP serving
+serve = ["fastapi>=0.110", "uvicorn[standard]>=0.29"]
+# Plots in the benchmark report
+report = ["matplotlib>=3.8"]
+dev = ["pytest>=8", "httpx>=0.27", "ruff>=0.6"]
+all = ["domain-llm[train,api,serve,report]"]
+
+[project.scripts]
+domain-llm = "domain_llm.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 115
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]

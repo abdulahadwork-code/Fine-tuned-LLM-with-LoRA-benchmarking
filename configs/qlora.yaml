@@ -1,0 +1,57 @@
+# Main experiment: QLoRA on Qwen2.5-1.5B-Instruct, PubMedQA.
+# Fits a single 12-16 GB GPU (T4 / RTX 3060 / Colab). ~1-2 h for 10.4k examples x 2 epochs.
+experiment_name: pubmedqa-qwen2.5-1.5b-qlora
+
+data:
+  dataset_name: qiaojin/PubMedQA
+  train_artificial_samples: 10000   # + ~400 expert-labelled train examples
+  test_size: 500
+  val_size: 100
+  max_context_chars: 3000
+  processed_dir: data/processed
+  seed: 42
+
+model:
+  base_model: Qwen/Qwen2.5-1.5B-Instruct
+  quantization: 4bit          # 4bit = QLoRA, none = plain LoRA
+  dtype: auto
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules: all-linear
+
+train:
+  output_dir: outputs/qlora
+  num_train_epochs: 2
+  per_device_train_batch_size: 4
+  gradient_accumulation_steps: 4    # effective batch 16
+  learning_rate: 2.0e-4
+  lr_scheduler_type: cosine
+  warmup_ratio: 0.03
+  max_seq_length: 1024
+  logging_steps: 10
+  eval_steps: 100
+  early_stopping_patience: 3
+  gradient_checkpointing: true
+  report_to: none                   # tensorboard | wandb
+
+generation:
+  max_new_tokens: 64
+  batch_size: 16
+
+api:
+  model: claude-opus-5-5
+  effort: low
+  max_tokens: 2048
+  enable_fallbacks: true
+  concurrency: 4
+  input_price_per_mtok: 4.0
+  output_price_per_mtok: 20.0
+
+benchmark:
+  output_dir: outputs/benchmark
+  systems: [base, finetuned, api]
+  bootstrap_samples: 1000
+  resume: true

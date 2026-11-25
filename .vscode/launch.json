@@ -1,0 +1,66 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "1. Prepare data (smoke)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "domain_llm.cli",
+      "args": ["prepare-data", "-c", "configs/smoke.yaml"],
+      "console": "integratedTerminal",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "name": "2. Train (smoke, CPU)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "domain_llm.cli",
+      "args": ["train", "-c", "configs/smoke.yaml"],
+      "console": "integratedTerminal",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "name": "3. Benchmark (smoke)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "domain_llm.cli",
+      "args": ["benchmark", "-c", "configs/smoke.yaml"],
+      "console": "integratedTerminal",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "name": "Train (full QLoRA, GPU)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "domain_llm.cli",
+      "args": ["train", "-c", "configs/qlora.yaml"],
+      "console": "integratedTerminal",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "name": "Benchmark (full: base vs fine-tuned vs API)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "domain_llm.cli",
+      "args": ["benchmark", "-c", "configs/qlora.yaml"],
+      "console": "integratedTerminal",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "name": "Serve API (smoke adapter)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "domain_llm.cli",
+      "args": ["serve", "-c", "configs/smoke.yaml", "--port", "8000"],
+      "console": "integratedTerminal",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "name": "Run tests",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "console": "integratedTerminal"
+    }
+  ]
+}

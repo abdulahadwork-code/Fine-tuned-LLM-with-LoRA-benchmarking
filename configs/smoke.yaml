@@ -1,0 +1,41 @@
+# End-to-end smoke test that runs on a laptop CPU in a few minutes.
+# Uses a 135M-parameter chat model and a tiny slice of data. Numbers are NOT meaningful.
+experiment_name: smoke-test
+
+data:
+  train_artificial_samples: 0
+  test_size: 500
+  val_size: 100
+  max_context_chars: 600
+  processed_dir: data/processed
+
+model:
+  base_model: HuggingFaceTB/SmolLM2-135M-Instruct
+  quantization: none
+  dtype: float32
+
+lora:
+  r: 8
+  alpha: 16
+
+train:
+  output_dir: outputs/smoke
+  max_steps: 10
+  per_device_train_batch_size: 2
+  gradient_accumulation_steps: 1
+  max_seq_length: 384
+  logging_steps: 2
+  eval_steps: 5
+  early_stopping_patience: null
+  gradient_checkpointing: false
+
+generation:
+  max_new_tokens: 24
+  batch_size: 4
+
+benchmark:
+  output_dir: outputs/smoke_benchmark
+  systems: [base, finetuned]
+  limit: 8
+  bootstrap_samples: 200
+  resume: false
