@@ -1,5 +1,7 @@
 import pytest
+
 from domain_llm.data import Example
+
 
 def make_examples(n_yes=30, n_no=20, n_maybe=10):
     out = []

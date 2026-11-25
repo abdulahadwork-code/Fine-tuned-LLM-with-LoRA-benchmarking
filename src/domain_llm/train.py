@@ -87,6 +87,7 @@ def train(cfg: ProjectConfig) -> Path:
         TrainingArguments,
         set_seed,
     )
+    from transformers.trainer_utils import get_last_checkpoint
 
     set_seed(cfg.data.seed)
     out_dir = Path(cfg.train.output_dir)
@@ -194,8 +195,14 @@ def train(cfg: ProjectConfig) -> Path:
         ),
     )
 
+    # Pick up from the newest checkpoint if a previous run was interrupted (e.g. Colab disconnect).
+    ckpt_dir = out_dir / "checkpoints"
+    last_ckpt = get_last_checkpoint(str(ckpt_dir)) if ckpt_dir.is_dir() else None
+    if last_ckpt:
+        log.info("Resuming training from %s", last_ckpt)
+
     t0 = time.perf_counter()
-    result = trainer.train()
+    result = trainer.train(resume_from_checkpoint=last_ckpt)
     train_seconds = time.perf_counter() - t0
 
     adapter_dir = out_dir / "adapter"
